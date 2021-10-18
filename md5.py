@@ -15,28 +15,31 @@ try:
 
 
     def printWordlist(file):
-        wordlist = open(file,"r",encoding="ISO-8859-1")
-        wordsWordlist = wordlist.read().split("\n")
-        for i in range(0,1000000):
-            try:
-                raw_hash = str(str(str(str(subprocess.check_output(f"echo -n '{wordsWordlist[i]}' | md5sum", shell=True)).replace("-","")).replace("b'","")).replace("\\n'","")).replace(" ","")
-                print("=> {}".format(wordsWordlist[i]))
-                if raw_hash == md5hash:
-                    text = fg("green") + "Password found! >>" + attr(0)
-                    password = fg("black") + bg("yellow") + f"{wordsWordlist[i]}" + attr(0)
-                    print("")
-                    print(f"{text} {password}")
-                    save_file()
-                    exit()
+        try:
+            wordlist = open(file,"r",encoding="ISO-8859-1")
+            wordsWordlist = wordlist.read().split("\n")
+            for i in range(0,1000000):
+                try:
+                    raw_hash = str(str(str(str(subprocess.check_output(f"echo -n '{wordsWordlist[i]}' | md5sum", shell=True)).replace("-","")).replace("b'","")).replace("\\n'","")).replace(" ","")
+                    print("=> {}".format(wordsWordlist[i]))
+                    if raw_hash == md5hash:
+                        text = fg("green") + "Password found! >>" + attr(0)
+                        password = fg("black") + bg("yellow") + f"{wordsWordlist[i]}" + attr(0)
+                        print("")
+                        print(f"{text} {password}")
+                        save_file()
+                        exit()
 
-            except IndexError:
-                break
-            
-        text = fg("red") + "Password not found!" + attr(0)
-        print("")
-        print(text)
-        exit()
+                except IndexError:
+                    break
 
+            text = fg("red") + "Password not found!" + attr(0)
+            print("")
+            print(text)
+            exit()
+        except FileNotFoundError:
+            print("File not found!")
+            exit()
 
 
     wordlist_file = input("Enter wordlist path [Exp: /root/Desktop/wordlist.txt]: ")
