@@ -18,11 +18,13 @@ try:
         try:
             wordlist = open(file,"r",encoding="ISO-8859-1")
             wordsWordlist = wordlist.read().split("\n")
+            print("")
             for i in range(0,1000000):
                 try:
-                    raw_hash = str(str(str(str(subprocess.check_output(f"echo -n '{wordsWordlist[i]}' | md5sum", shell=True)).replace("-","")).replace("b'","")).replace("\\n'","")).replace(" ","")
-                    print("=> {}".format(wordsWordlist[i]))
-                    if raw_hash == md5hash:
+                    raw_hash = str(str(str(str(subprocess.check_output(f"echo -n '{wordsWordlist[i]}' | {hashType}sum", shell=True)).replace("-","")).replace("b'","")).replace("\\n'","")).replace(" ","")
+                    text = fg("black") + bg("white") + f"     {wordsWordlist[i]}     " + attr(0)
+                    print(f"\r-> {text}",end="")
+                    if raw_hash == rawHash:
                         text = fg("green") + "Password found! >>" + attr(0)
                         password = fg("black") + bg("yellow") + f"{wordsWordlist[i]}" + attr(0)
                         print("")
@@ -32,18 +34,42 @@ try:
 
                 except IndexError:
                     break
-
+                
             text = fg("red") + "Password not found!" + attr(0)
             print("")
             print(text)
             exit()
         except FileNotFoundError:
             print("File not found!")
-            exit()
 
+    hashList = """
+md5
+sha256
+"""
 
     wordlist_file = input("Enter wordlist path [Exp: /root/Desktop/wordlist.txt]: ")
-    md5hash = input("Enter md5 hash string [Exp: e10adc3949ba59abbe56e057f20f883e]: ")
+    while True:
+        global hashType
+        hashType = input("Enter hash format ['list' show all formats]: ")
+        splitted_HashList = hashList.split("\n")
+        a = 0
+        if hashType == "list":
+            print(hashList)
+            continue
+        for i in range(0,10):
+            try:
+                if str(hashType) != str(splitted_HashList[i]):
+                    a += 1
+                    continue
+            except IndexError:
+                if a > 3:
+                    print("Unknown hash format!")
+                    exit()
+                else:
+                    pass
+        else:
+            break
+    rawHash = input("Enter hash string: ")
     printWordlist(wordlist_file)
 except ModuleNotFoundError:
     data = input("install requirements (y/n) ")
@@ -56,3 +82,6 @@ except ModuleNotFoundError:
         exit()
     else:
         exit()
+except KeyboardInterrupt:
+    print("\nquit...")
+    exit()
